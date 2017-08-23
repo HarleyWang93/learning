@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>加载更多</title>
+  <style>
+    .ct{
+      list-style: none;
+      padding: 0;
+    }
+    .ct li{
+      margin-bottom: 10px;
+      border: 1px solid;
+      cursor: pointer;
+      height: 38px;
+      padding-top: 10px;
+    }
+    .ct li:hover{
+      background: green;
+      color:white;
+    }
+    .button {
+      display: block;
+      width: 100px;
+      height: 40px;
+      line-height: 40px;
+      margin: 0 auto;
+      border: 1px solid red;
+      text-align: center;
+      text-decoration: none;
+      color: red;
+
+    }
+  </style>
+</head>
+<body>
+  <ul class="ct">
+    <li>内容1</li>
+    <li>内容2</li>
+  </ul>
+  <a href="#" class="button">加载更多</a>
+  <script>
+    var button = document.querySelector('.button')
+    var content = document.querySelector('.ct')
+    var xhr = new XMLHttpRequest()
+    var index = 2
+    var sendEnd = false
+    button.addEventListener('click', function (e) {
+      e.preventDefault()
+      if (sendEnd){
+        return
+      }
+      xhr.onreadystatechange = function () {
+        if(xhr.readyState === 4 && (xhr.status == 200||xhr.status == 304)){
+          //获取数据
+          var data = JSON.parse(xhr.responseText)
+          var fragment = document.createDocumentFragment()
+          for (var i in data){
+            //创建元素
+            var li = document.createElement('li')
+            //将内容放入元素
+            li.innerText = data[i]
+            fragment.appendChild(li)
+          }
+          content.appendChild(fragment)
+          sendEnd = false
+        }
+      }
+
+      xhr.open('get', '/loadMore?index=' + index + '&length=5', true)
+      xhr.send()
+      sendEnd = true
+      index += 5
+
+    })
+  </script>
+</body>
+</html>
